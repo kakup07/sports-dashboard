@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Test</title>
+</head>
+<body>
+
+    <h1>WebSocket Test</h1>
+    <h4 id="status-text" class="status-off">connecting.....</h4>
+    <form id="message-form">
+      <input id="message-input" type="text" placeholder="type message" required>
+      <button type="submit">Send</button>
+    </form>
+
+    <pre id="logs"></pre>
+
+    <script>
+        let logs = document.getElementById('logs')
+        const input = document.getElementById('message-input')
+
+        function appendLogs(label, message){
+          let currTs = (new Date()).toLocaleString()
+          logs.textContent = `${currTs} ${label} ${message}\n` +  logs.textContent
+        }
+
+        let status_text = document.getElementById('status-text')
+
+        const socket = new WebSocket("ws://localhost:8080");
+
+        socket.addEventListener('open', () => {
+          status_text.textContent = 'connected'
+          status_text.className = 'status-on'
+          appendLogs('[System]', 'Connection Established')
+        })
+        
+        socket.addEventListener('close', () => {
+          status_text.textContent = 'disconnected'
+          status_text.className = 'status-off'
+          appendLogs('[System]', 'Connection Closed')
+        })
+
+        socket.addEventListener('message', (e) => {
+          appendLogs('[Received]', e.data)
+        })
+
+        document.getElementById('message-form').addEventListener('submit', (e) => {
+          e.preventDefault()
+          if (socket.readyState !== WebSocket.OPEN){
+            appendLogs('[ERROR]', 'no active connection')
+            return
+          }
+          const msg = input.value.trim()
+          socket.send(msg)
+          appendLogs('[SENT]', `${msg}`)
+        })
+    </script>
+
+</body>
+</html>

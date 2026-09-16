@@ -11,7 +11,7 @@ matchRouter.get('/', async (req, res) => {
   if(!parsed.success){
     return res.status(400).json({
       error: 'Invalid Query', 
-      details: JSON.stringify(parsed.error)
+      details: parsed.error.issues
     })
   }
   const limit = Math.min(parsed.data.limit ?? 50, MAX_LIMIT)
@@ -21,7 +21,7 @@ matchRouter.get('/', async (req, res) => {
     return res.status(201).json({ data: JSON.stringify(data[0])})
   } catch (e) {
     console.log(`Match router list failed with error :: ${e}`)
-    return res.status(500).json({error: 'failed to list matches', details: JSON.stringify(e)})
+    return res.status(500).json({error: 'failed to list matches'})
   }
 })
 
@@ -57,11 +57,15 @@ matchRouter.post('/', async (req, res) => {
       away_score: away_score ?? 0,
       status: getMatchStatus(start_time, end_time)
     })
+    if(res.app.locals.broadcastMatchCreated){
+      res.app.locals.broadcastMatchCreated(result)
+    }
+
     res.status(201).json({ data: result })
   }
   catch(e) {
     console.log(`Match POST failed with error :: ${e}`)
-    res.status(500).json({error: 'Failed to create match.', details: JSON.stringify(e)})
+    res.status(500).json({error: 'Failed to create match.'})
   }
 
 })

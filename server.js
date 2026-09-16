@@ -1,5 +1,6 @@
 import express from 'express';
 import teamRoutes from './src/routes/teams.js';
+import { matchRouter } from './src/routes/matches.js';
 import { initializeDatabase } from './src/db/schema.js';
 
 const app = express();
@@ -12,6 +13,8 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/teams', teamRoutes);
+app.use('/api/matches', matchRouter);
+
 
 app.use((err, req, res, next) => {
   console.error(err);

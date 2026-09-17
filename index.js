@@ -3,6 +3,7 @@ import teamRoutes from './src/routes/teams.js';
 import { matchRouter } from './src/routes/matches.js';
 import http from 'http';
 import { attachWebSocketServer } from './src/ws/server.js';
+import {initializeDatabase} from './src/db/schema.js'
 
 const PORT = process.env.PORT || 8000;
 const HOST = process.env.HOST || '0.0.0.0'
@@ -29,6 +30,7 @@ app.use((err, req, res, next) => {
 
 async function startServer() {
   try {
+    await initializeDatabase()
     const baseUrl = `http://${HOST}:${PORT}`
     server.listen(PORT, HOST, () => {
       console.log(`Server started at ${baseUrl}`);

@@ -1,5 +1,4 @@
 import express from 'express';
-import teamRoutes from './src/routes/teams.js';
 import { matchRouter } from './src/routes/matches.js';
 import http from 'http';
 import { attachWebSocketServer } from './src/ws/server.js';
@@ -18,7 +17,6 @@ app.get('/', (req, res) => {
   res.send('Sports dashboard is running');
 });
 
-app.use('/api/teams', teamRoutes);
 app.use('/api/matches', matchRouter);
 app.use('/api/matches/:id/commentary', commentaryRoute)
 

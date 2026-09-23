@@ -14,10 +14,11 @@ function subscribe(matchId, socket){
 function unsubscribe(matchId, socket){
   const subscribers = matchSubscriber.get(matchId)
   if(!subscribers) return
-  if(subscribers.size === 0) {
-    return matchSubscriber.delete(matchId)
-  }
   subscribers.delete(socket)
+  if(subscribers.size === 0) {
+    matchSubscriber.delete(matchId)
+  }
+  
 }
 
 function cleanupSubscriptions(socket){
@@ -31,7 +32,6 @@ function broadcastToMatch(matchId, payload){
   if(!subscribers || subscribers.size === 0) return
 
   const message = JSON.stringify(payload)
-  console.log(subscribers)
   for(const subscriber of subscribers){
     if(subscriber.readyState === WebSocket.OPEN)
     subscriber.send(message)
@@ -67,7 +67,7 @@ function handleMessage(socket, data){
 
   if(message?.type === 'unsubscribe' && Number.isInteger(message.matchId)){
     const matchId = message.matchId
-    unsubscribe(matchId)
+    unsubscribe(matchId, socket)
     socket.subscribtions.delete(matchId)
     sendJson(socket, {type: 'unsubscribed', matchId: message.matchId})
   }
@@ -115,7 +115,6 @@ export function attachWebSocketServer(server){
   }
 
   function broadcastCommentary(matchId, comment){
-    console.log('inside broadcastCommentary')
     broadcastToMatch(matchId, {type: 'commentary', data: comment})
   }
 

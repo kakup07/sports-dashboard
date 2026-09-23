@@ -1,7 +1,7 @@
 import { query } from '../db/db.js';
 
-export async function listCommentary({id, limit}){
-  const result = await query(`select * from commentary where id = $1 order by created_at limit $2`, [IdleDeadline, limit])
+export async function listCommentary({matchId, limit}){
+  const result = await query(`select * from commentary where match_id = $1 order by created_at DESC limit $2`, [matchId, limit])
   return result.rows
 }
 

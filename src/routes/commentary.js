@@ -3,7 +3,7 @@ import { createCommentarySchema, listCommentaryQuerySchema, matchIdParamSchema }
 import { createCommentary, listCommentary } from '../models/commentary.js';
 
 const commentaryRoute = Router({ mergeParams: true });
-const MAX_LIMIT = 100
+const DEFAULT_LIMIT = 50
 commentaryRoute.get('/', async (req, res) => {
   const paramsResult = matchIdParamSchema.safeParse(req.params);
 
@@ -21,14 +21,13 @@ commentaryRoute.get('/', async (req, res) => {
       error: 'Limit out of bound'
     })
   }
-  const id = req.params.id
-  const limit = Math.min(req.query.limit ?? 50, 100)
-  const data = await listCommentary({limit, id})
+  const matchId = paramsResult.data.id
+  const limit = queryResult.data.limit ?? DEFAULT_LIMIT;
+  const data = await listCommentary({limit, matchId})
   res.status(200).json({data})
 })
 
 commentaryRoute.post('/', async (req, res) => {
-  console.log()
   const paramsResult = matchIdParamSchema.safeParse(req.params);
 
   if (!paramsResult.success) {
@@ -61,15 +60,12 @@ commentaryRoute.post('/', async (req, res) => {
       tags: bodyResult.data.tags,
     });
 
-    console.log('commentary create log -- ', JSON.stringify(result, null, 2))
     if(res.app.locals.broadcastCommentary){
-      console.log('broadcast called')
       res.app.locals.broadcastCommentary(result.match_id, result)
     }
 
     return res.status(201).json({ data: result });
   } catch (error) {
-    console.error('Commentary creation failed:', error);
     return res.status(500).json({ error: 'Failed to create commentary' });
   }
 });

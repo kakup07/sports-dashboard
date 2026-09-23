@@ -3,8 +3,9 @@ import { createMatchSchema, listMatchesQuerySchema } from '../validation/matches
 import { createMatch, listMatches } from '../models/matches.js';
 import { getMatchStatus } from '../utils/match_team.js';
 
-export const matchRouter = new Router()
 const MAX_LIMIT = 100
+export const matchRouter = new Router()
+
 matchRouter.get('/', async (req, res) => {
   const parsed = listMatchesQuerySchema.safeParse(req.query)
 

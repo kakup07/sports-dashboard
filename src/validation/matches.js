@@ -11,10 +11,6 @@ const MATCH_STATUS = {
   FINISHED: 'finished',
 };
 
-const matchIdParamSchema = z.object({
-  id: z.coerce.number().int().positive(),
-});
-
 const isoString = z.string().refine((val) => isoDateRegex.test(val) && !isNaN(Date.parse(val)), {
   message: 'Invalid ISO date string',
 });
@@ -63,7 +59,6 @@ const updateScoreSchema = z.object({
 export {
   listMatchesQuerySchema,
   MATCH_STATUS,
-  matchIdParamSchema,
   createMatchSchema,
   updateScoreSchema,
 };

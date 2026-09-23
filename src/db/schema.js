@@ -41,7 +41,7 @@ export async function initializeDatabase() {
     CREATE TABLE IF NOT EXISTS commentary (
       id SERIAL PRIMARY KEY,
       match_id INTEGER NOT NULL REFERENCES matches (id) ON DELETE CASCADE,
-      minute INTEGER CHECK (minute >= 0),
+      minutes INTEGER CHECK (minutes >= 0),
       sequence INTEGER NOT NULL CHECK (sequence >= 0),
       period TEXT,
       event_type TEXT NOT NULL,

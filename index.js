@@ -1,9 +1,9 @@
 import express from 'express';
-import teamRoutes from './src/routes/teams.js';
 import { matchRouter } from './src/routes/matches.js';
 import http from 'http';
 import { attachWebSocketServer } from './src/ws/server.js';
 import {initializeDatabase} from './src/db/schema.js'
+import commentaryRoute from './src/routes/commentary.js';
 
 const PORT = process.env.PORT || 8000;
 const HOST = process.env.HOST || '0.0.0.0'
@@ -17,11 +17,12 @@ app.get('/', (req, res) => {
   res.send('Sports dashboard is running');
 });
 
-app.use('/api/teams', teamRoutes);
 app.use('/api/matches', matchRouter);
+app.use('/api/matches/:id/commentary', commentaryRoute)
 
-const { broadcastMatchCreated } = attachWebSocketServer(server)
+const { broadcastMatchCreated, broadcastCommentary } = attachWebSocketServer(server)
 app.locals.broadcastMatchCreated = broadcastMatchCreated
+app.locals.broadcastCommentary = broadcastCommentary
 
 app.use((err, req, res, next) => {
   console.error(err);
